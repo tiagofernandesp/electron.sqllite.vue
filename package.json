@@ -1,0 +1,26 @@
+{
+  "name": "calvi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "rebuild": "electron-rebuild -f -w sqlite3",
+    "build": "electron-packager . calvi --overwrite --out=dist --asar",
+    "postinstall": "install-app-deps"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^1.7.11",
+    "knex": "^0.14.2",
+    "sqlite3": "^3.1.13",
+    "vue": "^2.5.13"
+  },
+  "devDependencies": {
+    "electron-builder": "^19.56.0",
+    "electron-packager": "^11.0.0",
+    "electron-rebuild": "^1.7.3"
+  }
+}

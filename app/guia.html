@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Confeções Calvi - Lavandaria</title>
+
+    <link rel="stylesheet" href="../template/photon-0.1.2-dist/css/photon.min.css">
+    <link rel="stylesheet" href="../template/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="window">
+            <header class="toolbar toolbar-header">
+                <!--<h1 class="title">Encomendas</h1>-->
+               
+                <div class="toolbar-actions">
+                    <div class="btn-group btn-home">
+                        <a v-on:click="goEncomendas()">
+                            <span class="icon icon-home"></span> Encomendas
+                        </a>
+                    </div>
+                    <a class="arrow" v-on:click="goEncomendas(bdencomenda.id)" v-if="bdencomenda.ordem_int">
+                        <span class="icon icon-box"></span>Encomenda nº {{bdencomenda.ordem_int}} - {{bdencomenda.cliente_nome}} {{bdencomenda.quantidade}}
+                        {{bdencomenda.descricao}}
+                    </a>
+                    <!--<a class="arrow" v-on:click="goGuias()" v-if="selected.n_transporte">
+                        <span class="icon icon-doc-text"></span>{{selected.n_transporte}}</a>
+                    <a class="arrow"><span class="icon icon-archive"></span>25</a>-->
+                    <div class="btn-group btn-home btn-home-right">
+                        <a v-on:click="goMaquinas()">
+                            <span class="icon icon-cc-sa"></span> Maquinas
+                        </a>
+                        <a v-on:click="goReceitas()">
+                            <span class="icon icon-database"></span> Receitas
+                        </a>
+                    </div>
+                </div>
+
+            </header>
+            <div class="window-content">
+                <div class="pane-group">
+                    <div class="pane-md sidebar no-padd-lr">
+
+                        <div class="section-accord section-accord-guia">
+                            <button class="accordion" v-bind:class="{  'active' : accordion==1}" v-on:click="changeccordion(1)">Guia</button>
+                            <div class="panelacc" v-if="accordion==1">
+                                <h4>Pesquisar</h4>
+                                <input class="form-control" type="text" placeholder="Nº Transporte" v-model="pesquisaguia">
+                                <form class="form_encomendas" @submit.prevent="saveGuia()">
+                                    <div class="inner-form">
+                                        <div class="form-group">
+                                            <label>Num. Transporte</label>
+                                            <input v-model="selected.n_transporte" type="number" class="form-control" placeholder="Numero de transporte" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Quantidade</label>
+                                            <input v-model="selected.quantidade_guia" type="number" class="form-control" placeholder="Quantidade" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Transportador</label>
+                                            <input v-model="selected.nome_transporte" type="text" class="form-control" placeholder="Transportador" required>
+                                        </div>
+
+
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-form btn-positive btn-gravar">
+                                                <span v-if="selected.id">Editar</span>
+                                                <span v-else>Criar</span>
+                                            </button>
+
+                                            <a v-on:click="resetSelected()" class="btn btn-form btn-default btn-cancelar">Limpar</a>
+                                            <a v-on:click="removeGuia()" class="btn btn-form btn-negative btn-cancelar">Eliminar</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="section-accord section-accord-guia">
+                            <button class="accordion" v-bind:class="{  'active' : accordion==2}" v-on:click="changeccordion(2)">Intervenção</button>
+                            <div class="panelacc" v-if="accordion==2">
+                                <h4>Pesquisar</h4>
+                                <input class="form-control" type="text" placeholder="Nº Interveção" v-model="pesquisaint">
+
+                                <form class="form_encomendas" @submit.prevent="saveIntervencao()">
+                                    <div class="inner-form">
+                                        <div class="form-group">
+                                            <label>Nº Intervenção</label>
+                                            <input v-model="selectedint.id_intervencao" type="number" class="form-control" placeholder="Intervencao" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Quantidade</label>
+                                            <input v-model="selectedint.quantidade_int" type="number" class="form-control" placeholder="Quantidade" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Kg</label>
+                                            <input v-model="selectedint.quilos" type="number" class="form-control" placeholder="kg" required>
+                                        </div>
+
+                                        <div class="form-group form-group-half pxright">
+                                            <label>M. Lavar</label>
+                                            <select class="form-control" v-model="selectedint.id_maquina_lavar" required>
+                                                <option v-for="option in mlavar" v-bind:value="option.id">
+                                                    {{ option.id }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group form-group-half pxleft">
+                                            <label>M. Secar</label>
+                                            <select class="form-control" v-model="selectedint.id_maquina_secar" required>
+                                                <option v-for="option in msecar" v-bind:value="option.id">
+                                                    {{ option.id }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Receita</label>
+                                            <select class="form-control" v-model="selectedint.id_receita" required>
+                                                <option v-if="ifInArray(selectedint.id_receita)" v-bind:value="selectedint.id_receita">{{selectedint.numero_receita}}</option>
+                                                <option v-for="option in receitas" v-bind:value="option.id">
+                                                    {{ option.numero }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Data</label>
+                                            <input v-model="selectedint.data" type="text" class="form-control" placeholder="Data" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PH</label>
+                                            <input v-model="selectedint.ph" type="number" step="0.1" min="6" max="7" class="form-control" placeholder="PH" required>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-form btn-positive btn-gravar">
+                                                <span v-if="selectedint.id">Editar</span>
+                                                <span v-else>Criar</span>
+                                            </button>
+
+                                            <a v-on:click="resetSelectedint()" class="btn btn-form btn-default btn-cancelar">Limpar</a>
+                                            <a v-on:click="removeIntervencao()" class="btn btn-form btn-negative btn-cancelar">Eliminar</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="section-accord section-accord-guia">
+                            <button class="accordion" v-on:click="changeccordion(3)" v-on:click="changeccordion(3)">Gerar Automático</button>
+                            <div class="panelacc" v-if="accordion==3">
+
+                                <form class="form_encomendas">
+                                    <div class="inner-form">
+                                        <div class="form-group">
+                                            <label>Data</label>
+                                            <input v-model="gerarbd.data" type="text" class="form-control" placeholder="Data">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PH</label>
+                                            <input v-model="gerarbd.ph_ini" type="number" step="0.1" min="6" max="7" placeholder="PH" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Receita</label>
+                                            <select class="form-control" v-model="gerarbd.id_receita" required>
+                                                <option v-for="option in receitas" v-bind:value="option.id">
+                                                    {{ option.numero }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-actions">
+                                            <a v-if="selected.id" v-on:click="gerarIntervencoes()" type="submit" class="btn btn-form btn-positive btn-gravar">Gerar</a>
+                                            <a v-else class="btn btn-form btn-negative btn-gravar">Selecione a guia</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="section-accord section-accord-guia">
+                            <button class="accordion" v-on:click="changeccordion(4)" v-on:click="changeccordion(4)">Imprimir</button>
+                            <div class="panelacc" v-if="accordion==4">
+
+                                <form class="form_encomendas">
+                                    <div class="inner-form">
+                                        <div class="form-group">
+                                            <label>Imprimir por:</label>
+                                            <select class="form-control" v-model="tipoimpressao">
+                                                <option value="guia">Guia</option>
+                                                <option value="int">Interveções</option>
+                                            </select>
+                                        </div>
+                                        <div v-if="tipoimpressao=='int'" class="form-group">
+                                            <label>Nº Intervenção Inicial</label>
+                                            <input v-model="print_int_ini" type="number" class="form-control" placeholder="Numero intervenção">
+
+                                            <label>Nº Intervenção Final</label>
+                                            <input v-model="print_int_fin" type="number" class="form-control" placeholder="Numero intervenção">
+                                        </div>
+                                        <div v-if="tipoimpressao=='guia'" class="form-group">
+                                            <label>Guia</label>
+                                            <select class="form-control" v-model="print_guia">
+                                                <option v-for="option in bdata" v-bind:value="option.id">
+                                                    {{ option.n_transporte }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <a v-on:click="print()" type="submit" class="btn btn-form btn-positive btn-gravar">Imprimir</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pane pane-guias">
+                        <h4 class="titulo-guias-int">
+                            <span class="icon icon-doc-text"></span> Guias</h4>
+
+                        <table class="table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nº Transporte</th>
+                                    <th>Quantidade</th>
+                                    <!--<th></th>-->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-bind:class="{  'tr-active' : row.id==selected.id}" v-for="row in bdata" v-if="pesquisaguia=='' || pesquisaguia==row.n_transporte">
+                                    <td v-on:click="editGuia(row);">{{row.n_transporte}}</td>
+                                    <td v-on:click="editGuia(row);">{{row.quantidade_guia}}</td>
+                                    <!--<td v-on:click="editGuia(row);">
+                                        <span class="icon icon-pencil"></span>
+                                    </td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pane pane-intervecao">
+                        <h4 class="titulo-guias-int">
+                            <span class="icon icon-archive"></span> Intervenções</h4>
+                        <table class="table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nº Intervenção</th>
+                                    <th>Quantidade</th>
+                                    <th>Quilos</th>
+                                    <th>M. Lavar</th>
+                                    <th>M. Secar</th>
+                                    <th>Receita</th>
+                                    <th>Data</th>
+                                    <th>PH</th>
+                                    <!--<th></th>-->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-bind:class="{'tr-active' : row.id==selectedint.id}" v-if="row.id_guia==selected.id && (pesquisaint=='' || pesquisaint==row.id_intervencao)"
+                                    v-for="row in bdintervencao" v-on:click="editIntervencao(row);">
+                                    <td>{{row.id_intervencao}}</td>
+                                    <td>{{row.quantidade_int}}</td>
+                                    <td>{{row.quilos}}</td>
+                                    <td>{{row.id_maquina_lavar}}</td>
+                                    <td>{{row.id_maquina_secar}}</td>
+                                    <td>{{row.numero_receita}}</td>
+                                    <td>{{row.data}}</td>
+                                    <td>{{row.ph}}</td>
+                                    <!--<td>
+                                        <span class="icon icon-pencil"></span>
+                                    </td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+            <footer class="toolbar toolbar-footer">
+                <h1 class="title">Desenvolvido por Tiago Fernandes</h1>
+            </footer>
+        </div>
+
+    </div>
+</body>
+<script src="../node_modules/vue/dist/vue.min.js"></script>
+<script>require('./guia.js')</script>
+
+</html>

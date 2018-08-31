@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Confeções Calvi - Lavandaria</title>
+
+    <link rel="stylesheet" href="../template/photon-0.1.2-dist/css/photon.min.css">
+    <link rel="stylesheet" href="../template/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="window">
+            <header class="toolbar toolbar-header">
+                <!--<h1 class="title">Encomendas</h1>-->
+
+                <div class="toolbar-actions">
+                    <div class="btn-group btn-home">
+                        <a v-on:click="goEncomendas()">
+                            <span class="icon icon-home"></span> Encomendas
+                        </a>
+                    </div>
+                    <a class="arrow" v-on:click="goEncomendas()" v-if="selectedEncomenda.ordem_int">
+                        <span class="icon icon-box"></span>{{selectedEncomenda.ordem_int}}</a>
+                    <!--<a class="arrow"><span class="icon icon-doc-text"></span>23555</a>
+                    <a class="arrow"><span class="icon icon-archive"></span>25</a>-->
+                    <div class="btn-group btn-home btn-home-right">
+                        <a v-on:click="goMaquinas()">
+                            <span class="icon icon-cc-sa"></span> Maquinas
+                        </a>
+                        <a v-on:click="goReceitas()">
+                            <span class="icon icon-database"></span> Receitas
+                        </a>
+                    </div>
+                </div>
+
+            </header>
+            <div class="window-content">
+                <div class="pane-group">
+                    <div class="pane-md sidebar">
+                        <h4>Pesquisar</h4>
+                        <div class="btn-group" style="width: 100%;">
+                            <input class="form-control" type="text" placeholder="Ordem Interna" v-model="pesquisa">
+                        </div>
+
+
+                        <form class="form_encomendas" @submit.prevent="saveEncomenda()">
+                            <h4 class="title-form"></h4>
+                            <div class="inner-form">
+                                <div class="form-group form-group-half pxright">
+                                    <label>Ord. Interna</label>
+                                    <input v-model="selectedEncomenda.ordem_int" type="number" class="form-control" placeholder="Ord. interna" required>
+                                </div>
+                                <div class="form-group form-group-half pxleft">
+                                    <label>Cliente PO</label>
+                                    <input v-model="selectedEncomenda.cliente_po" type="text" class="form-control" placeholder="PO Cliente" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nome cliente</label>
+                                    <input type="text" v-model="selectedEncomenda.cliente_nome" class="form-control" placeholder="Nome do cliente" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Composição</label>
+                                    <input v-model="selectedEncomenda.composicao" type="text" class="form-control" placeholder="Composição da peça" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descrição</label>
+                                    <input v-model="selectedEncomenda.descricao" type="text" class="form-control" placeholder="Descrição da peça" required>
+                                </div>
+                                <div class="form-group form-group-half pxright">
+                                    <label>Peso peça</label>
+                                    <input v-model="selectedEncomenda.peso_peca" type="number" step="0.01" class="form-control" placeholder="Peso da peça" required>
+                                </div>
+                                <div class="form-group form-group-half pxleft">
+                                    <label>Quantidades</label>
+                                    <input v-model="selectedEncomenda.quantidade" type="number" class="form-control" placeholder="Quantidade em peças" required>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-form btn-positive btn-gravar">
+                                        <span v-if="selectedEncomenda.id">Editar</span>
+                                        <span v-else>Criar</span>
+                                    </button>
+
+                                    <a v-on:click="resetSelectedEncomenda()" class="btn btn-form btn-default btn-cancelar">Limpar</a>
+                                    <a v-on:click="removeEncomenda()" class="btn btn-form btn-negative btn-cancelar">Eliminar</a>
+                                </div>
+
+
+                            </div>
+                        </form>
+                        <h4 class="title-form">Informações adicionais</h4>
+                        <div class="inner-form">
+
+                            <div class="form-group">
+                                <label style="font-weight: 700;">Nº intervenções efectuadas</label>
+                                <p style="margin: 0;">{{currentStatus.nint}} intervenções</p>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 700;">Quantidade finalizada</label>
+                                <div class="w3-light-grey">
+                                    <div v-if="selectedEncomenda.id" class="w3-container w3-green w3-center" v-bind:style="{ width: currentStatus.quant*100/selectedEncomenda.quantidade+'%'}">{{currentStatus.quant + ' de '+selectedEncomenda.quantidade}}</div>
+                                    <div v-else="selectedEncomenda.id" class="w3-container w3-green w3-center" v-bind:style="{ width: 0+'%'}">{{0}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a v-on:click="getAllDataOlder()" class="btn btn-form btn-default btn-cancelar btn-todas-enc">Ver todas as Encomendas</a>
+                    </div>
+                    <div class="pane">
+                        <h4 class="titulo-guias-int">
+                            <span class="icon icon-box"></span> Encomendas</h4>
+                        <table class="table-striped">
+                            <thead>
+                                <tr>
+                                    <!--<th>
+                                        <input type="checkbox">
+                                    </th>
+                                    <th>Id</th>-->
+                                    <th>Ordem Int.</th>
+                                    <th>Nome cliente</th>
+                                    <th>Cliente PO</th>
+                                    <th>Composição</th>
+                                    <th>Descrição</th>
+                                    <th>Peso peça</th>
+                                    <th>Quantidades</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="pesquisa==row.ordem_int || pesquisa==''" v-bind:class="{  'tr-active' : row.id==selectedEncomenda.id}" v-for="row in bdata">
+                                    <!--<th>
+                                        <input type="checkbox">
+                                    </th>
+                                    <td >{{row.id}}</td>-->
+                                    <td v-on:click="goGuias(row.id)">{{row.ordem_int}}</td>
+                                    <td v-on:click="goGuias(row.id)">{{row.cliente_nome}}</td>
+                                    <td v-on:click="goGuias(row.id)">{{row.cliente_po}}</td>
+                                    <td v-on:click="goGuias(row.id)">{{row.composicao}}</td>
+                                    <td v-on:click="goGuias(row.id)">{{row.descricao}}</td>
+                                    <td v-on:click="goGuias(row.id)">{{row.peso_peca}}</td>
+                                    <td v-on:click="goGuias(row.id)">{{row.quantidade}}</td>
+                                    <td v-on:click="editEncomenda(row)">
+                                        <span class="icon icon-pencil"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+            <footer class="toolbar toolbar-footer">
+                <h1 class="title">Desenvolvido por Tiago Fernandes
+                </h1>
+            </footer>
+        </div>
+
+        <!--<div id="modal" v-if="openModal">
+            <div class="wrap">
+                <form class="form_encomendas">
+                    <div class="form-group">
+                        <h3>Formulário Encomendas</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome cliente</label>
+                        <input type="text" v-model="selectedEncomenda.cliente_nome" class="form-control" placeholder="Nome do cliente">
+                    </div>
+                    <div class="form-group form-group-half pxright">
+                        <label>Cliente PO</label>
+                        <input v-model="selectedEncomenda.cliente_po" type="text" class="form-control" placeholder="PO Cliente">
+                    </div>
+                    <div class="form-group form-group-half pxleft">
+                        <label>Ordem ID</label>
+                        <input v-model="selectedEncomenda.ordem_int" type="number" class="form-control" placeholder="Order interna">
+                    </div>
+                    <div class="form-group">
+                        <label>Composição</label>
+                        <input v-model="selectedEncomenda.composicao" type="text" class="form-control" placeholder="Composição da peça">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input v-model="selectedEncomenda.descricao" type="text" class="form-control" placeholder="Descrição da peça">
+                    </div>
+                    <div class="form-group form-group-half pxright">
+                        <label>Peso peça</label>
+                        <input v-model="selectedEncomenda.peso_peca" type="number" step="0.01" class="form-control" placeholder="Peso da peça">
+                    </div>
+                    <div class="form-group form-group-half pxleft">
+                        <label>Quantidades</label>
+                        <input v-model="selectedEncomenda.quantidade" type="number" class="form-control" placeholder="Quantidade em peças">
+                    </div>
+
+                    <div class="form-actions">
+                        <a v-on:click="openModal=false" class="btn btn-form btn-default">Cancel</a>
+                        <a v-on:click="saveEncomenda()" type="submit" class="btn btn-form btn-positive">OK</a>
+                        <a v-on:click="removeEncomenda()" class="btn btn-form btn-negative pull-right">Eliminar</a>
+                    </div>
+                </form>
+            </div>
+        </div>-->
+    </div>
+</body>
+<script src="../node_modules/vue/dist/vue.min.js"></script>
+<script>require('./index.js')</script>
+
+</html>

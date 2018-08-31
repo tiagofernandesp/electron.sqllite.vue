@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Confeções Calvi - Lavandaria</title>
+
+    <link rel="stylesheet" href="../template/photon-0.1.2-dist/css/photon.min.css">
+    <link rel="stylesheet" href="../template/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="window">
+            <header class="toolbar toolbar-header">
+                <!--<h1 class="title">Maquinas</h1>-->
+
+                <div class="toolbar-actions">
+                    <div class="btn-group btn-home">
+                        <a v-on:click="goEncomendas()">
+                            <span class="icon icon-home"></span> Encomendas
+                        </a>
+                    </div>
+                    <!--<a class="arrow"><span class="icon icon-doc-text"></span>23555</a>
+                    <a class="arrow"><span class="icon icon-archive"></span>25</a>-->
+                    <div class="btn-group btn-home btn-home-right">
+                        <a v-on:click="goMaquinas()">
+                            <span class="icon icon-cc-sa"></span> Maquinas
+                        </a>
+                        <a v-on:click="goReceitas()">
+                            <span class="icon icon-database"></span> Receitas
+                        </a>
+                    </div>
+                </div>
+
+            </header>
+            <div class="window-content">
+                <div class="pane-group">
+                    <div class="pane-md sidebar">
+
+                        <form class="form_Maquinas" @submit.prevent="saveMaquina()">
+                            <h4 class="title-form"></h4>
+                            <div class="inner-form">
+                                <div class="form-group form-group-half pxright">
+                                    <label>Numero</label>
+                                    <input v-model="selectedMaquina.newid" type="number" class="form-control" placeholder="Nº Maquina" required>
+                                </div>
+                                <div class="form-group form-group-half pxleft">
+                                    <label>KG</label>
+                                    <input v-model="selectedMaquina.kg" type="number" class="form-control" placeholder="Kg" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipo</label>
+                                    <select class="form-control" v-model="selectedMaquina.tipo" required>
+                                        <option value="1">Lavar</option>
+                                        <option value="2">Secar</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Estado</label>
+                                    <select class="form-control" v-model="selectedMaquina.status" required>
+                                        <option value="1">Ativo</option>
+                                        <option value="2">Inativo</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-form btn-positive btn-gravar">
+                                        <span v-if="selectedMaquina.id">Editar</span>
+                                        <span v-else>Criar</span>
+                                    </button>
+
+                                    <a v-on:click="resetSelectedMaquina()" class="btn btn-form btn-default btn-cancelar">Limpar</a>
+                                    <a v-on:click="removeMaquina()" class="btn btn-form btn-negative btn-cancelar">Eliminar</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="pane">
+                        <h4 class="titulo-guias-int">
+                            <span class="icon icon-cc-sa"></span> Maquinas</h4>
+                        <table class="table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Numero</th>
+                                    <th>KG</th>
+                                    <th>Tipo</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-bind:class="{  'tr-active' : row.id==selectedMaquina.id}" v-for="row in bdata">
+                                    <td v-on:click="editMaquina(row)">{{row.id}}</td>
+                                    <td v-on:click="editMaquina(row)">{{row.kg}}</td>
+                                    <td v-on:click="editMaquina(row)"><span v-if="row.tipo==1">Lavar</span><span v-else>Secar</span></td>
+                                    <td v-on:click="editMaquina(row)"><span v-if="row.status==1">Ativo</span><span v-else>Inativo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+            <footer class="toolbar toolbar-footer">
+                <h1 class="title">Desenvolvido por Tiago Fernandes
+                </h1>
+            </footer>
+        </div>
+
+    </div>
+</body>
+<script src="../node_modules/vue/dist/vue.min.js"></script>
+<script>require('./maquinas.js')</script>
+
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../template/style.css">
+</head>
+<style>
+    body{
+        margin: 0;
+    }
+</style>
+<body>
+    <div id="app" style="    display: inline-block;">
+        <ul class="tab-print-int" v-for="row in intervencoes">
+            <li>
+                <div class="logo" style="display: inline-block;">
+                    <img src="..\template\img\logo.jpg" alt="Logo">
+                </div>
+            </li>
+            <li>
+                <div class="bloco-100">
+                    <div class="bloco-tit">
+                        INFORMAÇÃO GERAL - LAVANDARIA
+                        <span>O.S. - {{row.ordem_int}}{{row.id_intervencao}}</span>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-100">
+                    <div class="bloco-ret-25">doc de transporte nº</div>
+                    <div class="bloco-ret-75">{{row.n_transporte}} {{row.nome_transporte}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Peso da peça</div>
+                    <div class="bloco-ret">{{row.peso_peca}}</div>
+                </div>
+                <div class="bloco-50">
+                    <div class="bloco-ret">composição</div>
+                    <div class="bloco-ret">{{row.composicao}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-50">
+                    <div class="bloco-ret">descrição da peça</div>
+                    <div class="bloco-ret">{{row.descricao}}</div>
+                </div>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Qunatidades</div>
+                    <div class="bloco-ret">{{row.quantidade_int}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-100">
+                    <div class="bloco-ret-25">Nome de Cliente - P.O.</div>
+                    <div class="bloco-ret-75">{{row.cliente_nome}} - P.O. {{row.cliente_po}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-100">
+                    <div class="bloco-ret-25">Ordem interna</div>
+                    <div class="bloco-ret-75">Encomenda calvi {{row.ordem_int}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Nº maquina lavar</div>
+                    <div class="bloco-ret">{{row.id_maquina_lavar}}</div>
+                </div>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Nº maquina secar</div>
+                    <div class="bloco-ret">{{row.id_maquina_secar}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Nº da receita</div>
+                    <div class="bloco-ret">{{row.numero_receita}}</div>
+                </div>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Data</div>
+                    <div class="bloco-ret">{{row.data}}</div>
+                </div>
+            </li>
+            <li>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Analise ao PH</div>
+                    <div class="bloco-ret">{{row.ph}}</div>
+                </div>
+                <div class="bloco-50">
+                    <div class="bloco-ret">Total de Kilos</div>
+                    <div class="bloco-ret">{{row.quilos}}</div>
+                </div>
+            </li>
+            
+        </ul>
+    </div>
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+    <script>require('./worker.js')</script>
+
+</body>
+
+</html>

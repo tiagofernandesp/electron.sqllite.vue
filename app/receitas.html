@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Confeções Calvi - Lavandaria</title>
+
+    <link rel="stylesheet" href="../template/photon-0.1.2-dist/css/photon.min.css">
+    <link rel="stylesheet" href="../template/style.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="window">
+            <header class="toolbar toolbar-header">
+                <!--<h1 class="title">Receitas</h1>-->
+
+                <div class="toolbar-actions">
+                    <div class="btn-group btn-home">
+                        <a v-on:click="goEncomendas()">
+                            <span class="icon icon-home"></span> Encomendas
+                        </a>
+                    </div>
+                    <!--<a class="arrow"><span class="icon icon-doc-text"></span>23555</a>
+                    <a class="arrow"><span class="icon icon-archive"></span>25</a>-->
+                    <div class="btn-group btn-home btn-home-right">
+                        <a v-on:click="goMaquinas()">
+                            <span class="icon icon-cc-sa"></span> Maquinas
+                        </a>
+                        <a v-on:click="goReceitas()">
+                            <span class="icon icon-database"></span> Receitas
+                        </a>
+                    </div>
+                </div>
+
+            </header>
+            <div class="window-content">
+                <div class="pane-group">
+                    <div class="pane-md sidebar">
+                        <h4>Pesquisar</h4>
+                        <div class="btn-group" style="width: 100%;">
+                            <input class="form-control" type="text" placeholder="Nº receita" v-model="pesquisa">
+                        </div>
+                        <form class="form_Receitas" @submit.prevent="saveReceita()">
+                            <h4 class="title-form"></h4>
+                            <div class="inner-form">
+                                <div class="form-group form-group-half pxright">
+                                    <label>Numero</label>
+                                    <input v-model="selectedReceita.numero" type="number" class="form-control" placeholder="Nº Receita" required>
+                                </div>
+                                <div class="form-group form-group-half pxleft">
+                                    <label>KG</label>
+                                    <input v-model="selectedReceita.kg" type="number" class="form-control" placeholder="Kg de roupa" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descrição</label>
+                                    <textarea v-model="selectedReceita.descricao" class="form-control" placeholder="Produtos Usados/Lotes" required cols="30"
+                                        rows="5"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-form btn-positive btn-gravar">
+                                        <span v-if="selectedReceita.id">Editar</span>
+                                        <span v-else>Criar</span>
+                                    </button>
+
+                                    <a v-on:click="resetSelectedReceita()" class="btn btn-form btn-default btn-cancelar">Limpar</a>
+                                    <a v-on:click="removeReceita()" class="btn btn-form btn-negative btn-cancelar">Eliminar</a>
+                                </div>
+                            </div>
+                        </form>
+                        <a v-on:click="getAllDataOlder()" class="btn btn-form btn-default btn-cancelar btn-todas-enc">Ver todas as Receitas</a>
+                    </div>
+                    <div class="pane">
+                        <h4 class="titulo-guias-int">
+                            <span class="icon icon-database"></span> Receitas</h4>
+                        <table class="table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Numero</th>
+                                    <th>Kg</th>
+                                    <th>Descricao</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="pesquisa==row.numero || pesquisa==''" v-bind:class="{  'tr-active' : row.id==selectedReceita.id}" v-for="row in bdata">
+                                    <td v-on:click="editReceita(row)">{{row.numero}}</td>
+                                    <td v-on:click="editReceita(row)">{{row.kg}}</td>
+                                    <td v-on:click="editReceita(row)">{{row.descricao}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+            <footer class="toolbar toolbar-footer">
+                <h1 class="title">Desenvolvido por Tiago Fernandes
+                </h1>
+            </footer>
+        </div>
+
+    </div>
+</body>
+<script src="../node_modules/vue/dist/vue.min.js"></script>
+<script>require('./receitas.js')</script>
+
+</html>
