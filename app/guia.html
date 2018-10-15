@@ -149,7 +149,7 @@
                         <div class="section-accord section-accord-guia">
                             <button class="accordion" v-on:click="changeccordion(3)" v-on:click="changeccordion(3)">Gerar Automático</button>
                             <div class="panelacc" v-if="accordion==3">
-
+                        
                                 <form class="form_encomendas">
                                     <div class="inner-form">
                                         <div class="form-group">
@@ -167,6 +167,10 @@
                                                     {{ option.numero }}
                                                 </option>
                                             </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="checkbox" style="margin-bottom: 0;">Exportar PH: </label>
+                                            <input type="checkbox" v-model="print_ph" style="margin-top: 0;vertical-align: super;">
                                         </div>
                                         <div class="form-actions">
                                             <a v-if="selected.id" v-on:click="gerarIntervencoes()" type="submit" class="btn btn-form btn-positive btn-gravar">Gerar</a>
@@ -204,11 +208,10 @@
                                                 </option>
                                             </select>
                                         </div>
-
                                         <div class="form-actions">
                                             <a v-on:click="print()" type="submit" class="btn btn-form btn-positive btn-gravar">Imprimir</a>
                                         </div>
-                                    </div>
+                                        </div>
                                 </form>
                             </div>
                         </div>

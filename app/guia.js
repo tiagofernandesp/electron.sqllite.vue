@@ -89,6 +89,7 @@ var vm = new Vue({
         print_int_ini: '',
         print_int_fin: '',
         print_guia: '',
+        print_ph: true,
         tipoimpressao: 'guia',
         pesquisaint: '',
         pesquisaguia: ''
@@ -123,7 +124,10 @@ var vm = new Vue({
                 var aux = {
                     id: this.mlavar[i].id,
                     kg: this.mlavar[i].kg,
-                    n_intervencoes: 0
+                    n_intervencoes: 0,
+                    n_ph: 1,
+                    ph: 0,
+                    id_int:0
                 }
                 g.m_lavar[this.mlavar[i].id] = aux;
             }
@@ -142,9 +146,13 @@ var vm = new Vue({
                     if (g.data == '') { g.data = this.bdintervencao[i].data; }
 
                     g.id_intervencao = this.bdintervencao[i].id_intervencao;
-
                 }
-
+                if (g.m_lavar[this.bdintervencao[i].id_maquina_lavar].id_int < this.bdintervencao[i].id_intervencao) {
+                    if (this.bdintervencao[i].ph) {
+                        g.m_lavar[this.bdintervencao[i].id_maquina_lavar].ph = this.bdintervencao[i].ph;
+                        g.m_lavar[this.bdintervencao[i].id_maquina_lavar].id_int = this.bdintervencao[i].id_intervencao;
+                    }
+                }
                 if (this.bdintervencao[i].id_guia == g.id_guia) {
                     g.quantidade_atual += this.bdintervencao[i].quantidade_int;
                     if (g.m_lavar.hasOwnProperty(this.bdintervencao[i].id_maquina_lavar)) { g.m_lavar[this.bdintervencao[i].id_maquina_lavar].n_intervencoes += 1; }
@@ -235,32 +243,37 @@ var vm = new Vue({
                 if (g.quantidade_total < (g.quantidade_atual + quant_int)) {
                     quant_int = g.quantidade_total - g.quantidade_atual;
                 }
+                if (!g.m_lavar[id_maq_lavar].ph) {
+                    g.m_lavar[id_maq_lavar].ph=g.ph;
+                }
                 //generate PH
-                if (last_ph_vezes == 0) {
+                if (g.m_lavar[id_maq_lavar].n_ph == 4) {
                     var random = Math.floor((Math.random() * 10) + 1);
-                    if (g.ph >= ph_max) {
-                        g.ph += -0.2;
-                    } else if (g.ph <= ph_min) {
-                        g.ph += 0.2;
+                    if (g.m_lavar[id_maq_lavar].ph >= ph_max) {
+                        g.m_lavar[id_maq_lavar].ph += -0.2;
+                    } else if (g.m_lavar[id_maq_lavar].ph <= ph_min) {
+                        g.m_lavar[id_maq_lavar].ph += 0.2;
                     } else {
                         switch (random) {
-                            case 5, 6:
-                                g.ph += 0.1;
+                            case 7:
+                                g.m_lavar[id_maq_lavar].ph += 0.1;
                                 break;
-                            case 7, 8:
-                                g.ph += -0.1;
+                            case 8:
+                                g.m_lavar[id_maq_lavar].ph += -0.1;
                                 break;
                             case 9:
-                                g.ph += 0.2;
+                                g.m_lavar[id_maq_lavar].ph += 0.2;
                                 break;
                             case 10:
-                                g.ph += -0.2;
+                                g.m_lavar[id_maq_lavar].ph += -0.2;
                                 break;
                         }
                     }
-                    last_ph_vezes = 3;
+                    //console.log("1 last_ph_vezes:"+g.m_lavar[id_maq_lavar].n_ph +"PH:"+g.m_lavar[id_maq_lavar].ph);
+                    g.m_lavar[id_maq_lavar].n_ph = 2;
                 } else {
-                    last_ph_vezes += -1;
+                    //console.log("1 last_ph_vezes:"+g.m_lavar[id_maq_lavar].n_ph +"PH:"+g.m_lavar[id_maq_lavar].ph);
+                    g.m_lavar[id_maq_lavar].n_ph += 1;
                 }
 
                 this.selectedint.id_intervencao = g.id_intervencao;
@@ -269,7 +282,12 @@ var vm = new Vue({
                 this.selectedint.id_maquina_lavar = id_maq_lavar;
                 this.selectedint.id_maquina_secar = id_maq_secar;
                 this.selectedint.data = g.data;
-                this.selectedint.ph = g.ph.toFixed(1);
+                if (this.print_ph) {
+                    this.selectedint.ph = g.m_lavar[id_maq_lavar].ph.toFixed(1);
+                }
+                else {
+                    this.selectedint.ph = undefined;
+                }
                 this.selected.id = g.id_guia;
                 this.selectedint.id_receita = g.id_receita;
 
@@ -440,7 +458,6 @@ var vm = new Vue({
                     this.on('Guia.id_encomenda', knex.raw('?', [id])).andOn('Guia.id', 'Intervencao.id_guia')
                 }).orderBy('Intervencao.id_intervencao', 'desc')
                 .then((rows) => {
-                    console.log(rows);
                     this.bdintervencao = rows;
                 })
         },

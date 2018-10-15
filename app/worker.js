@@ -17,7 +17,7 @@ var vm = new Vue({
             }*/
 
             this.intervencoes = content;
-            console.log(content);
+            //console.log(content);
             ipcRenderer.send("readyToPrintPDF");
         }
     }

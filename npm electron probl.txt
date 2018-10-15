@@ -1,0 +1,7 @@
+npm install --global --production windows-build-tools
+colocar variavel do sistema python C:\Python27
+
+
+npm install --save-dev electron-builder
+npm install --save sqlite3
+npm run postinstall

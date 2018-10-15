@@ -8,3 +8,4 @@ var knexconn = require('knex')({
   exports.knex=knexconn;
 
   //filename: "./resources/app/server/database.sqlite"
+  //filename: "./database.sqlite"

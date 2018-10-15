@@ -314,6 +314,7 @@ float: left;
     text-transform: uppercase;
     text-align: center;
     box-sizing: border-box;
+    height: 21px;
 }
 .tab-print-int li .bloco-50 .bloco-ret{
     float: left;

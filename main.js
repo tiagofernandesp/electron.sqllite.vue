@@ -56,7 +56,7 @@ function createWindow() {
   workerWindow.setMenu(null);
   workerWindow.loadURL("file://" + __dirname + "/app/worker.html");
   //workerWindow.hide();
-  workerWindow.webContents.openDevTools();
+  //workerWindow.webContents.openDevTools();
   workerWindow.on("closed", () => {
     workerWindow = undefined;
   });
