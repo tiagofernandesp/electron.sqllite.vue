@@ -5,3 +5,16 @@ colocar variavel do sistema python C:\Python27
 npm install --save-dev electron-builder
 npm install --save sqlite3
 npm run postinstall
+
+npm run-script start
+npm run-script build
+
+///Copiar BD
+
+
+git
+git clone https://github.com/tiagofernandesp/electron.sqllite.vue.git
+git pull origin master
+git add .
+git commit -m "Change PH"
+git push origin master
