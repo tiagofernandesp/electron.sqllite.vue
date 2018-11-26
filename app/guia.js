@@ -125,7 +125,7 @@ var vm = new Vue({
                     id: this.mlavar[i].id,
                     kg: this.mlavar[i].kg,
                     n_intervencoes: 0,
-                    n_ph: 1,
+                    n_ph: 0,
                     ph: 0,
                     id_int:0
                 }
@@ -155,15 +155,29 @@ var vm = new Vue({
                 }
                 if (this.bdintervencao[i].id_guia == g.id_guia) {
                     g.quantidade_atual += this.bdintervencao[i].quantidade_int;
-                    if (g.m_lavar.hasOwnProperty(this.bdintervencao[i].id_maquina_lavar)) { g.m_lavar[this.bdintervencao[i].id_maquina_lavar].n_intervencoes += 1; }
-                    if (g.m_secar.hasOwnProperty(this.bdintervencao[i].id_maquina_secar)) { g.m_secar[this.bdintervencao[i].id_maquina_secar].n_intervencoes += 1; }
                 }
+                if (g.m_lavar.hasOwnProperty(this.bdintervencao[i].id_maquina_lavar)) { g.m_lavar[this.bdintervencao[i].id_maquina_lavar].n_intervencoes += 1; }
+                if (g.m_secar.hasOwnProperty(this.bdintervencao[i].id_maquina_secar)) { g.m_secar[this.bdintervencao[i].id_maquina_secar].n_intervencoes += 1; }
 
             }
             if (g.ph_ini != '') { g.ph = parseFloat(g.ph_ini); }
             g.id_intervencao += 1;
             var maquina_espera = { id: '', kg: '' };
             var last_ph_vezes = 3;
+            var aux=0;
+            for (maq_id in g.m_lavar) {
+                var res = g.m_lavar[maq_id].n_intervencoes % 3;
+                if (res==0 && g.m_lavar[maq_id].n_intervencoes > 0) {
+                    g.m_lavar[maq_id].n_ph=3;
+                }
+                else{
+                    g.m_lavar[maq_id].n_ph=res;
+                }
+                if (g.id_intervencao==1 && aux >1) {
+                    g.m_lavar[maq_id].n_ph=3;
+                }
+                aux+=1;
+            }
             //Criar as intervençoes
             while (g.quantidade_total > g.quantidade_atual && g.receita_kg_max > 0) {
                 var id_maq_lavar = '';
@@ -247,41 +261,43 @@ var vm = new Vue({
                     g.m_lavar[id_maq_lavar].ph=g.ph;
                 }
                 //generate PH
-                if (g.m_lavar[id_maq_lavar].n_ph == 4) {
-                    var random = Math.floor((Math.random() * 10) + 1);
+               //console.log("nPH:"+g.m_lavar[id_maq_lavar].n_ph);
+                if (g.m_lavar[id_maq_lavar].n_ph==3) {
+                    var random = Math.floor((Math.random() * 14) + 1);
                     if (g.m_lavar[id_maq_lavar].ph >= ph_max) {
                         g.m_lavar[id_maq_lavar].ph += -0.2;
                     } else if (g.m_lavar[id_maq_lavar].ph <= ph_min) {
                         g.m_lavar[id_maq_lavar].ph += 0.2;
                     } else {
                         switch (random) {
-                            case 7:
+                            case 4,14,13,12:
                                 g.m_lavar[id_maq_lavar].ph += 0.1;
                                 break;
-                            case 8:
+                            case 3,11,10,9:
                                 g.m_lavar[id_maq_lavar].ph += -0.1;
                                 break;
-                            case 9:
+                            case 8,7:
                                 g.m_lavar[id_maq_lavar].ph += 0.2;
                                 break;
-                            case 10:
+                            case 5,6:
                                 g.m_lavar[id_maq_lavar].ph += -0.2;
                                 break;
                         }
                     }
                     //console.log("1 last_ph_vezes:"+g.m_lavar[id_maq_lavar].n_ph +"PH:"+g.m_lavar[id_maq_lavar].ph);
-                    g.m_lavar[id_maq_lavar].n_ph = 2;
-                } else {
-                    //console.log("1 last_ph_vezes:"+g.m_lavar[id_maq_lavar].n_ph +"PH:"+g.m_lavar[id_maq_lavar].ph);
+                    g.m_lavar[id_maq_lavar].n_ph = 1;
+                }
+                else
+                {
                     g.m_lavar[id_maq_lavar].n_ph += 1;
                 }
-
                 this.selectedint.id_intervencao = g.id_intervencao;
                 this.selectedint.quantidade_int = quant_int;
                 this.selectedint.quilos = (quant_int * this.bdencomenda.peso_peca).toFixed();
                 this.selectedint.id_maquina_lavar = id_maq_lavar;
                 this.selectedint.id_maquina_secar = id_maq_secar;
                 this.selectedint.data = g.data;
+                //console.log("PH:"+this.selectedint.ph);
                 if (this.print_ph) {
                     this.selectedint.ph = g.m_lavar[id_maq_lavar].ph.toFixed(1);
                 }
